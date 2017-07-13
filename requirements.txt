@@ -1,0 +1,8 @@
+Django==1.10
+MySQL-Python==1.2.5
+#django-mysql==1.1.1
+jsonfield==2.0.1
+pyjwt==1.4.2
+twilio==5.7.0
+django-cors-headers==2.0.2
+gunicorn

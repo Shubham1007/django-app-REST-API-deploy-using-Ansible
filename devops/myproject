@@ -1,0 +1,26 @@
+server {
+    listen 80;
+    server_name server_ip domain.com;
+
+    location = /favicon.ico { access_log off; log_not_found off; }
+    location /static/ {
+        root /home/ubuntu/finwallet;
+    }
+
+    location / {
+        include proxy_params;
+        proxy_pass http://unix:/home/ubuntu/finwallet/finwallet.sock;
+    }
+}
+
+server {
+    listen 5000;
+    server_name server_ip domain.com;
+
+    location / {
+        root /home/ubuntu/finwallet/apidoc;
+        index index.html index.htm;
+        autoindex off;
+    }
+
+}

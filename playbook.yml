@@ -1,0 +1,105 @@
+---
+- hosts: ec2
+  vars:
+    environment_path: /home/ubuntu/virtual-env
+    app_path: /home/ubuntu/finwallet/
+    gunicorn_path: /etc/systemd/system/
+    nginx_path: /etc/nginx/sites-enabled/
+
+  tasks:
+    - name: Install Packages
+      apt: pkg={{item}} state=present update_cache=yes
+      #sudo: true
+      with_items:
+        - build-essential
+        - libssl-dev
+        - libffi-dev
+        - python-dev
+        - python-pip
+        - nginx
+        - gcc
+        - python-setuptools
+        - libmysqlclient-dev
+
+    - name: Sync Files
+      synchronize:
+        src: /home/ratul/developments/finwallet-api/
+        dest: "{{app_path}}"
+        #dirs: yes
+        rsync_opts:
+            - "--exclude=*.pem"
+            - "--exclude=fab*"
+            - "--exclude=sample.index.html"
+            - "--exclude=nginx.conf"
+
+    - name: Install requirements
+      action: pip name="{{item}}" state=present
+      with_items:
+        - virtualenv
+
+    - name: create virtualenv
+      pip:
+        #name: virtualenv
+        requirements: "{{app_path}}/requirements.txt"
+        virtualenv: "{{environment_path}}"
+        virtualenv_python: python2.7
+
+
+    - name: create log files
+      shell: touch "{{app_path}}/log/g-access.log"
+      shell: touch "{{app_path}}/log/g-error.log"
+
+
+    - name: Create static dir
+      command: mkdir "{{app_path}}static"
+
+
+    - name: Make my directory tree readable
+      file:
+        path: "{{app_path}}"
+        mode: u=rwX,g=rX,o=rX
+        owner: ubuntu
+        group: ubuntu
+        recurse: yes
+
+    - name: Copy gunicorn systemd service
+      copy:
+        src: devops/gunicorn.service
+        dest: "{{gunicorn_path}}"
+
+    - name: Copy nginx file to sites-enabled
+      synchronize: src=devops/myproject dest="{{nginx_path}}"
+
+
+    - name: Django syncdb
+      django_manage:
+        command: makemigrations
+        app_path: "{{ app_path }}"
+        virtualenv: "{{ environment_path }}"
+
+
+    - name: Django migrate
+      django_manage:
+        command: migrate
+        app_path: "{{ app_path }}"
+        virtualenv: "{{ environment_path }}"
+
+
+    - name: Django collectstatic
+      django_manage:
+        command: collectstatic
+        app_path: "{{ app_path }}"
+        virtualenv: "{{ environment_path }}"
+
+    - name: daemon reload
+      sudo: yes
+      command: systemctl daemon-reload
+
+    - name: Ensure directories are user permission
+      command: find "{{ app_path }}log/finwallet.log" -type f -exec chown ubuntu {} \;
+
+    - name: restart services
+      service: name="{{item}}" enabled=yes state=restarted
+      with_items:
+        - nginx
+        - gunicorn

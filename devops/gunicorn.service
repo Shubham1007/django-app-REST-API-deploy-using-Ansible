@@ -1,0 +1,16 @@
+[Unit]
+Description=gunicorn daemon
+After=network.target
+
+
+[Service]
+User=ubuntu
+Group=www-data
+WorkingDirectory=/home/ubuntu/finwallet
+ExecStart=/home/ubuntu/virtual-env/bin/gunicorn --workers 3 --bind unix:/home/ubuntu/finwallet/finwallet.sock finwallet.wsgi:application --access-logfile /home/ubuntu/finwallet/log/g-access.log --error-logfile /home/ubuntu/finwallet/log/g-error.log
+
+type=simple
+log_level=debug
+
+[Install]
+WantedBy=multi-user.target

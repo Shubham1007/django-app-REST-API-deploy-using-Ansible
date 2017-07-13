@@ -1,0 +1,2 @@
+[ec2]
+server_ip ansible_ssh_user=ubuntu
