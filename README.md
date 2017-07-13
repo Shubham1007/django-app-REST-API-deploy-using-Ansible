@@ -17,8 +17,8 @@ Configuration files are mainly written in the YAML data serialization format due
 Installing Ansible
 ``` sudo apt-add-repository ppa:ansible/ansible ```
 Press ENTER to accept the PPA addition.
-``` sudo apt-get update
-sudo apt-get install ansible ```
+``` sudo apt-get update ```
+``` sudo apt-get install ansible ```
 
 After completing the installation, change the ```playbook.yml``` and ```hosts``` file contents where necessary. Goto the ```gunicorn.service``` in devops directory and change values in ```WorkingDirectory``` and ```ExecStart``` of your needs. You also need to place your ip, domain, root, proxy_pass in ```myproject``` file which is an nginx file.
 
