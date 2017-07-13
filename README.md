@@ -1,9 +1,13 @@
 # # django REST-API deploy using Ansible # # 
 
+
 **Introduction**
+
 Configuration management systems are designed to make controlling large numbers of servers easy for administrators and operations teams. They allow you to control many different systems in an automated way from one central location. **Ansible** is a great alternative to these options because it has a much smaller overhead to get started.
 
+
 **How Does Ansible Work?**
+
 Ansible works by configuring client machines from an computer with Ansible components installed and configured. It communicates over normal SSH channels in order to retrieve information from remote machines, issue commands, and copy files. Because of this, an Ansible system does not require any additional software to be installed on the client computers.
 
 This is one way that Ansible simplifies the administration of servers. Any server that has an SSH port exposed can be brought under Ansible's configuration umbrella, regardless of what stage it is at in its life cycle.
